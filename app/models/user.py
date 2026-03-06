@@ -26,6 +26,7 @@ class User(db.Model):
 
     # List relation, untuk yang didalam kutip itu nama class
     profiles = db.relationship('Profile', backref='user', uselist=False)
+    employee_details = db.relationship('EmployeeDetail', backref='user', uselist=False)
 
 
     # Fungsi untuk hash dan check password
