@@ -5,6 +5,7 @@ from .extention import db, jwt, migrate
 from flask_cors import CORS
 
 from app.auth.routes import auth_blueprint
+from app.user.routes import user_blueprint
 
 def create_app():
     
@@ -19,5 +20,6 @@ def create_app():
     migrate.init_app(app, db)
 
     app.register_blueprint(auth_blueprint, url_prefix = "/auth")
+    app.register_blueprint(user_blueprint, url_prefix='/user')
 
     return app

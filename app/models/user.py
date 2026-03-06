@@ -1,6 +1,13 @@
+import enum
 from app.extention import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
+# ada dua cara mendefinisikan sebuah enum
+# Cara 1
+class UserRole(enum.Enum):
+    MEMBER = 'member'
+    USER = 'user'
+    
 class User(db.Model):
 
     __tablename__ = "users"
@@ -11,6 +18,17 @@ class User(db.Model):
     number_phone = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
 
+    # Cara 1
+    # role = db.Column(db.Enum(UserRole), default=UserRole.USER, nullable=False)
+
+    # Cara 2
+    role = db.Column(db.Enum('member', 'user', name='user_roles'), default='user', nullable=False)
+
+    # List relation, untuk yang didalam kutip itu nama class
+    profiles = db.relationship('Profile', backref='user', uselist=False)
+
+
+    # Fungsi untuk hash dan check password
     def set_password(self, password):
         self.password = generate_password_hash(password)
 

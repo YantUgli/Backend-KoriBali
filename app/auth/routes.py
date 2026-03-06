@@ -57,7 +57,7 @@ def register():
 
     return jsonify({
         'message' : 'User created',
-        'access_token' : access_token
+        # 'access_token' : access_token
     }), 201
 
 # Login
@@ -69,9 +69,10 @@ def login():
     email = data.get('email')
     password = data.get('password')
 
-    print(password)
+    # print(password)
     user = User.query.filter_by(email=email).first()
-    print(user)
+    # print('ini user', user)
+    
     if not user or not user.check_password(password):
         return jsonify({
             'message' : 'Invalid Credential'
