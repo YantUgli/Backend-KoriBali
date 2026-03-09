@@ -1,4 +1,4 @@
-from app.extention import db
+from app.extensions import db
 from datetime import date
 
 class EmployeeDetail(db.Model):

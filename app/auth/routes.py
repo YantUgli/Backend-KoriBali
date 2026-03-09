@@ -1,8 +1,14 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
-from app.extention import db
+from app.extensions import db
 from app.models.user import User
+from cerberus import Validator
+from app.auth.validation import user_register_schema
+from app.auth.service import (
+    register_service,
+    login_service
+)
 
 
 auth_blueprint = Blueprint('auth', __name__)
@@ -14,76 +20,26 @@ def register():
     data = request.get_json()
     # print(data)
 
-    username = data.get('username')
-    email =  data.get('email')
-    password = data.get('password')
-    number_phone = data.get('number_phone')
+    valid = Validator(user_register_schema)
 
-    if not email:
-        return jsonify({
-            'message' : 'email is required'
-        })
-    
-    if not number_phone:
-        return jsonify({
-            'message' : 'number phone is required'
-        })
+    if not valid.validate(data):
+        return {'error' : valid.errors}, 409
 
-    existing_user = User.query.filter(
-        (User.email==email) | (User.number_phone == number_phone)
-        ).first()
+    result, status = register_service(data)
 
-    # print(existing_user)
+    return jsonify(result), status
 
-    if existing_user:
-        return jsonify({
-            'message': 'Email or Number Phone already registered'
-        }), 400
-    
-    user = User(
-        username = username,
-        email = email,
-        number_phone = number_phone
-    )
-
-    user.set_password(password)
-    # print(user)
-    db.session.add(user)
-    db.session.commit()
-
-    # After Register langsung login
-    access_token = create_access_token(identity=str(user.id))
-
-
-    return jsonify({
-        'message' : 'User created',
-        # 'access_token' : access_token
-    }), 201
 
 # Login
 @auth_blueprint.route('/login', methods=['POST'])
 def login():
 
     data = request.get_json()
-    print(data)
-    email = data.get('email')
-    password = data.get('password')
 
-    # print(password)
-    user = User.query.filter_by(email=email).first()
-    # print('ini user', user)
+    result, status = login_service(data)
+
+    return jsonify(result), status
     
-    if not user or not user.check_password(password):
-        return jsonify({
-            'message' : 'Invalid Credential'
-        }), 401
-    
-    access_token = create_access_token(identity=str(user.id))
-
-    return jsonify({
-        'access_token': access_token
-    }) 
-
 # Protected Route
 @auth_blueprint.route('/me', methods=['GET'])
 @jwt_required()
