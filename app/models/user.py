@@ -1,6 +1,8 @@
 import enum
 from app.extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, timezone
+
 
 # ada dua cara mendefinisikan sebuah enum
 # Cara 1
@@ -17,7 +19,12 @@ class User(db.Model):
     email = db.Column(db.String(150), unique=True, nullable=False)
     number_phone = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
-
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(
+        db.DateTime,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc)
+    )
     # Cara 1
     # role = db.Column(db.Enum(UserRole), default=UserRole.USER, nullable=False)
 

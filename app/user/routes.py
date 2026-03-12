@@ -46,7 +46,7 @@ def update_profile():
 
 @user_blueprint.route('', methods=['GET'])
 # @jwt_required()
-@role_required('user')
+# @role_required('user')
 def get_users():
 
     result = get_all_users_service()
