@@ -1,6 +1,9 @@
 from datetime import datetime
 from app.extensions import db
 from app.models import User, Profile, EmployeeDetail
+from werkzeug.utils import secure_filename
+import os
+import uuid
 
 def get_user_profile_service(user_id):
 
@@ -36,8 +39,9 @@ def get_user_profile_service(user_id):
 
 
 
-def update_user_profile_service(user_id, data): 
-
+def update_user_profile_service(user_id, data, image): 
+    print(data, image)
+    pass
     user = User.query.get(user_id)
 
     if not user:
@@ -61,8 +65,22 @@ def update_user_profile_service(user_id, data):
         profile = Profile(user_id=user_id)
         db.session.add(profile)
 
-    if path_image_profile:
-        profile.path_image_profile = path_image_profile
+    if image:
+        filename = secure_filename(image.filename)
+
+        # Unique file name
+        unique_filename = f"{uuid.uuid4()}_{filename}"
+        
+        upload_path = os.path.join('uploads/profile', unique_filename)
+
+        image.save(upload_path)
+
+        if profile.path_image_profile:
+            old_path= profile.path_image_profile
+            if os.path.exists(old_path):
+                os.remove(old_path)
+
+        profile.path_image_profile = upload_path
 
     user.username = data.get('username', user.username)
     user.email = data.get('email', user.email)

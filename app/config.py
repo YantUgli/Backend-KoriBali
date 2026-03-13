@@ -13,3 +13,7 @@ class Config:
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "secret-key-backup-kalau-tidak-ada-di-env")
 
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=60)
+
+    UPLOAD_FOLDER = "uploads"
+
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024

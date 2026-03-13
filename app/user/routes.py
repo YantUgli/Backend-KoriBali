@@ -1,7 +1,8 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app, send_from_directory
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime
 from app.middleware.role_checker import role_required
+import os 
 
 from app.extensions import db
 from app.models import User, Profile, EmployeeDetail
@@ -36,9 +37,13 @@ def update_profile():
 
     user_id = get_jwt_identity()
 
-    data = request.json
+    # data = request.json
+    data = request.form.to_dict()
+    image = request.files.get('profile_image')
+
+    # print(data, image)
     
-    result, status = update_user_profile_service(user_id, data)
+    result, status = update_user_profile_service(user_id, data, image )
 
     return jsonify(result), status
 
@@ -84,3 +89,25 @@ def delete_user(user_id):
     result, status = delete_user_service(user_id)
 
     return jsonify(result), status
+
+
+@user_blueprint.route('/image', methods = ['POST'])
+def upload_file():
+
+    file = request.files.get('photo')
+
+    if not file:
+        return jsonify({
+            'message' : 'no file uploaded'
+        }), 400
+    
+    upload_folder = current_app.config['UPLOAD_FOLDER']
+
+    filepath = os.path.join(upload_folder, file.filename)
+
+    file.save(filepath)
+
+    return jsonify({
+        'message' : 'upload success',
+        'path' : filepath
+    })

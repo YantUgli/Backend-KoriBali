@@ -1,20 +1,33 @@
-from flask import Flask
+from flask import Flask, send_from_directory, current_app
 from dotenv import load_dotenv
 from .config import Config
 from .extensions import db, jwt, migrate
 from flask_cors import CORS
 from app.models.user import User
+import os
 
 from app.auth.routes import auth_blueprint
 from app.user.routes import user_blueprint
 from app.message.routes import message_blueprint
+from app.project.routes import project_blueprint
 
 def create_app():
     
     load_dotenv()
 
-    app = Flask(__name__)
+    app = Flask(
+        __name__,
+        static_folder="../uploads",
+        static_url_path="/uploads"
+        )
     app.config.from_object(Config)
+
+
+    # @app.route('/uploads/profile/<filename>')
+    # def get_profile_image(filename):
+    #     upload_folder = os.path.join(current_app.root_path, "...", "uploads", "profile")
+    #     return send_from_directory(upload_folder, filename)
+
     
     CORS(app)
     db.init_app(app)
@@ -30,5 +43,6 @@ def create_app():
     app.register_blueprint(auth_blueprint, url_prefix = "/auth")
     app.register_blueprint(user_blueprint, url_prefix='/user')
     app.register_blueprint(message_blueprint, url_prefix='/message')
+    app.register_blueprint(project_blueprint, url_prefix = '/project')
 
     return app

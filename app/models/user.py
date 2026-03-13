@@ -19,6 +19,11 @@ class User(db.Model):
     email = db.Column(db.String(150), unique=True, nullable=False)
     number_phone = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
+    role = db.Column(
+            db.Enum("user", "admin", name="user_roles"),
+            default="user",
+            nullable=False
+        )
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(
         db.DateTime,
