@@ -10,6 +10,7 @@ from app.auth.routes import auth_blueprint
 from app.user.routes import user_blueprint
 from app.message.routes import message_blueprint
 from app.project.routes import project_blueprint
+from app.article.routes import article_blueprint
 
 def create_app():
     
@@ -44,5 +45,6 @@ def create_app():
     app.register_blueprint(user_blueprint, url_prefix='/user')
     app.register_blueprint(message_blueprint, url_prefix='/message')
     app.register_blueprint(project_blueprint, url_prefix = '/project')
+    app.register_blueprint(article_blueprint, url_prefix='/article')
 
     return app

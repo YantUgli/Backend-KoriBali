@@ -1,20 +1,23 @@
-from flask import Blueprint, request, jsonify, current_app
-from app.models.project import Project
-from werkzeug.utils import secure_filename
-import uuid
-import os
+from flask import Blueprint, request, jsonify
 
 from app.extensions import db
+from app.project.service import (
+    get_projects_service,
+    create_project_service,
+    update_project_service,
+    delete_project_service,
+    add_project_images_service,
+    delete_image_project_service
+    )
 
 project_blueprint = Blueprint('project', __name__)
 
 @project_blueprint.route('', methods=['GET'])
 def get_projects():
-    projects = Project.query.all()
 
-    result = [project.to_dict() for project in projects]
+    result, status = get_projects_service()
 
-    return jsonify(result), 200
+    return jsonify(result), status
 
 
 
@@ -24,97 +27,46 @@ def create_project():
     data = request.form.to_dict()
     thumbnailImage = request.files.get('thumbnail_image')
 
-    if not thumbnailImage:
-        return jsonify({
-            'message': 'thumbnail image is required'
-        }), 400
-    
-    upload_folder = current_app.config['UPLOAD_FOLDER']
+    result, status = create_project_service(data, thumbnailImage)
 
-    # extract extension gambarnya 
-    ext = thumbnailImage.filename.split('.')[-1]
-    filename = f"{uuid.uuid4()}.{ext}"
-
-    filepath = os.path.join(upload_folder, filename)
-
-    thumbnailImage.save(filepath)
-
-    project = Project(
-        title=data.get('title'),
-        description = data.get('description'),
-        type = data.get('type'),
-        thumbnail_path = filepath
-    )
-
-    db.session.add(project)
-    db.session.commit()
-
-    return jsonify({
-        'message' : 'project created successfully',
-        'data' : project.to_dict()
-    }), 201
+    return jsonify(result), status
 
 
 
 @project_blueprint.route('/<int:project_id>', methods=['PUT'])
 def update_project(project_id):
 
-    project = Project.query.get(project_id)
-
-    if not project:
-        return jsonify({
-            "message": "project not found"
-        }), 404
-    
     data = request.form.to_dict()
 
     thumbnailImage = request.files.get('thumbnail_image')
 
-    if thumbnailImage:
-        upload_folder = current_app.config['UPLOAD_FOLDER']
+    result, status = update_project_service(project_id, data, thumbnailImage)
 
-        # extract extension gambarnya 
-        ext = thumbnailImage.filename.split('.')[-1]
-        filename = f"{uuid.uuid4()}.{ext}"
-
-        filepath = os.path.join(upload_folder, filename)
-
-        thumbnailImage.save(filepath)
-        
-        project.title = data.get('title')
-        project.description = data.get('description')
-        project.type = data.get('type') 
-        project.thumbnail_path = filepath
-
-    db.session.commit()
-
-    return jsonify({
-        'message' : 'project update successfully',
-        'data' : project.to_dict()
-    }), 200
+    return jsonify(result), status
 
 
 
 @project_blueprint.route('/<int:project_id>', methods=['DELETE'])
 def delete_project(project_id):
 
-    project = Project.query.get(project_id)
+    result, status = delete_project_service(project_id)
 
-    if not project:
-        return jsonify({
-            'message' : 'project not found'
-        }), 404
-    
-    try:
-        db.session.delete(project)
-        db.session.commit()
+    return jsonify(result), status
 
-        return jsonify({
-            'message' : 'delete project successfully'
-        }), 200
-    except Exception as e: 
-        db.session.rollback()
-        return jsonify({
-            'message' : 'error accur the process',
-            'error' : str(e)
-        }), 400
+
+
+@project_blueprint.route('/<int:project_id>/images', methods=['POST'])
+def add_project_images(project_id):
+
+    images = request.files.getlist('images')
+
+    return add_project_images_service(project_id, images)
+
+
+
+@project_blueprint.route('/image/<int:project_image_id>', methods=['DELETE'])
+def delete_image_project(project_image_id):
+
+    result, status = delete_image_project_service(project_image_id)
+
+    return jsonify(result), status

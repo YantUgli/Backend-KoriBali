@@ -16,7 +16,7 @@ class Project(db.Model):
         onupdate=lambda: datetime.now(timezone.utc)
     )
 
-    profile_images = db.relationship('ProjectImages', backref='project', uselist=False, cascade='all, delete-orphan')
+    project_images = db.relationship('ProjectImages', backref='project',  cascade='all, delete-orphan')
 
 
     def to_dict(self):
@@ -26,6 +26,7 @@ class Project(db.Model):
             'description' : self.description,
             'thumbnail_path' : self.thumbnail_path,
             'type' : self.type,
+            'images' : [img.image_url for img in self.project_images],
             'created_at' : self.created_at,
             'updated_at' : self.updated_at 
         }
