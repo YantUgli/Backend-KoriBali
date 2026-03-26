@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        padding: 30px;
+      }
+
+      h1 {
+        font-size: 20px;
+        margin-bottom: 5px;
+      }
+
+      .section {
+        margin-top: 20px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 6px;
+        text-align: left;
+      }
+
+      th {
+        background: #eee;
+      }
+
+      .signature {
+        margin-top: 50px;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .line {
+        margin-top: 40px;
+        border-top: 1px solid #000;
+        width: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Pole Measurement Report</h1>
+    <p>Generated Date: {{ date }}</p>
+
+    <div class="section">
+      <h3>General Information</h3>
+      <table>
+        <tr>
+          <td>Project Name</td>
+          <td>{{ project_name }}</td>
+        </tr>
+        <tr>
+          <td>Location</td>
+          <td>{{ location }}</td>
+        </tr>
+        <tr>
+          <td>Inspector</td>
+          <td>{{ inspector }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <h3>Measurement Data</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Pole ID</th>
+            <th>Height</th>
+            <th>Diameter</th>
+            <th>Condition</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in measurements %}
+          <tr>
+            <td>{{ row.id }}</td>
+            <td>{{ row.height }}</td>
+            <td>{{ row.diameter }}</td>
+            <td>{{ row.condition }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <h3>Inspector Notes</h3>
+      <p>{{ notes }}</p>
+    </div>
+
+    <div class="signature">
+      <div>
+        <p>Inspector Signature</p>
+        <div class="line"></div>
+      </div>
+      <div>
+        <p>Approved By</p>
+        <div class="line"></div>
+      </div>
+    </div>
+  </body>
+</html>

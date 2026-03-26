@@ -12,6 +12,10 @@ python-dotenv = "*"
 pymysql = "*"
 flask-cors = "*"
 cerberus = "*"
+pillow = "*"
+fpdf = "*"
+weasyprint = "*"
+playwright = "*"
 
 [dev-packages]
 
