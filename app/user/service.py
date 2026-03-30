@@ -1,6 +1,6 @@
 from datetime import datetime
 from app.extensions import db
-from app.models import User, Profile, EmployeeDetail
+from app.user.models import User, Profile, EmployeeDetail
 from werkzeug.utils import secure_filename
 import os
 import uuid

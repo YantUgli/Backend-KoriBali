@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 # from flask_jwt_extended import get_jwt_identity
 
-from app.models.message import Message
+from app.message.models import Message
 from app.extensions import db
 
 from cerberus import Validator

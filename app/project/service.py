@@ -1,6 +1,5 @@
 from flask import current_app
-from app.models.project import Project
-from app.models.project_images import ProjectImages
+from app.project.models import Project, ProjectImages
 from app.extensions import db
 
 from werkzeug.utils import secure_filename

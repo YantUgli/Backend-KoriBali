@@ -71,3 +71,6 @@ htmlcov/
 # =========================
 *.swp
 *.swo
+
+# photo
+uploads/

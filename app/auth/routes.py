@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
 from app.extensions import db
-from app.models.user import User
+from app.user.models import User
 from cerberus import Validator
 from app.auth.validation import user_register_schema
 from app.auth.service import (

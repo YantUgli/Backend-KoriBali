@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 from .config import Config
 from .extensions import db, jwt, migrate
 from flask_cors import CORS
-from app.models.user import User
 import os
 
 from app.auth.routes import auth_blueprint
@@ -41,7 +40,14 @@ def create_app():
         
         identity = jwt_data["sub"]
         return User.query.get(identity)
+    
+    # LIST MODEL
+    from app.user.models import User, Profile, EmployeeDetail
+    from app.article.models import Article, ArticleImages
+    from app.project.models import Project, ProjectImages
+    from app.message.models import Message
 
+    # LIST ROUTE
     app.register_blueprint(auth_blueprint, url_prefix = "/auth")
     app.register_blueprint(user_blueprint, url_prefix='/user')
     app.register_blueprint(message_blueprint, url_prefix='/message')

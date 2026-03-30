@@ -25,12 +25,18 @@ class Article(db.Model):
             'id' : self.id,
             'title' : self.title,
             'description' : self.description,
-            'thumbnail_path' : self.thumbnail_path,
+            'thumbnail_path' : #self.thumbnail_path, 
+            {'medium': self.thumbnail_path},
             'user_id' : self.user_id,
             'author_name' : self.author.username,
 
             'images' : [
-                    {'url' : img.image_url}
+                    # {'url' : img.image_url}
+                    {
+                        'original' : img.original_url,
+                        'medium' : img.medium_url,
+                        'thumbnail': img.thumbnail_url
+                    }
                 for img in self.article_images
             ],
             # image di panggil dengan format 
@@ -53,3 +59,19 @@ class Article(db.Model):
             'update_at' : self.updated_at
         }
     
+
+
+# ARTICLE IMAGE MODEL
+class ArticleImages(db.Model):
+    __tablename__ = 'article_images'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement = True)
+    # image_url = db.Column(db.String(255))
+
+    article_id = db.Column(db.Integer, db.ForeignKey('articles.id'), nullable=False)
+    original_url = db.Column(db.String(255))
+    medium_url = db.Column(db.String(255))
+    thumbnail_url = db.Column(db.String(255))
+
+    create_at = db.Column(db.DateTime, default= lambda: datetime.now(timezone.utc))
+

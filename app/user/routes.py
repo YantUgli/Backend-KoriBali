@@ -5,7 +5,7 @@ from app.middleware.role_checker import role_required
 import os 
 
 from app.extensions import db
-from app.models import User, Profile, EmployeeDetail
+from app.user.models import User, Profile, EmployeeDetail
 from app.user.service import (
     get_user_profile_service, 
     update_user_profile_service,

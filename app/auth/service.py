@@ -1,5 +1,5 @@
 from app.extensions import db
-from app.models.user import User
+from app.user.models import User
 from flask_jwt_extended import create_access_token
 
 

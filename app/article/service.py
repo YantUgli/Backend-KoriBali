@@ -4,9 +4,11 @@ from werkzeug.utils import secure_filename
 import os 
 import uuid
 
-from app.models.article import Article
-from app.models.article_image import ArticleImages
+from app.article.models import Article, ArticleImages
 from app.utils.image_handler import save_image
+
+# pakai image processing
+from app.utils.image_processor import save_image_version
 
 
 
@@ -34,8 +36,17 @@ def create_article_service(user_id, data, thumbnailImage):
     filename = f"{uuid.uuid4()}.{ext}"
 
     filepath = os.path.join(upload_folder, filename)
+    # old
+    # thumbnailImage.save(filepath)
 
-    thumbnailImage.save(filepath)
+    paths = save_image_version(thumbnailImage)
+
+    article = Article(
+        title=data.get('title'),
+        description=data.get('description'),
+        user_id=user_id,
+        thumbnail_path=paths["medium"]  # pilih medium buat thumbnail utama
+    )
 
     article = Article(
         title = data.get('title'),
@@ -72,13 +83,17 @@ def update_article_service(article_id, data, thumbnailImage):
 
 
     if thumbnailImage:
+        # old
+        # if article.thumbnail_path and os.path.exists(article.thumbnail_path):
+        #         os.remove(article.thumbnail_path)
 
-        if article.thumbnail_path and os.path.exists(article.thumbnail_path):
-                os.remove(article.thumbnail_path)
+        # filepath = save_image(thumbnailImage)
 
-        filepath = save_image(thumbnailImage)
+        # article.thumbnail_path = filepath
 
-        article.thumbnail_path = filepath
+        # new
+        paths = save_image_version(thumbnailImage)
+        article.thumbnail_path = paths["medium"]
 
     db.session.commit()
 
@@ -128,16 +143,27 @@ def add_article_images_service(article_id, images):
     saved = []
 
     for image in images:
+        # old
+        # filepath = save_image(image)
+
+        # image = ArticleImages(
+        #     article_id = article_id,
+        #     image_url = filepath
+        # )
         
-        filepath = save_image(image)
+        # new
+        paths = save_image_version(image)
 
         image = ArticleImages(
-            article_id = article_id,
-            image_url = filepath
+            article_id=article_id,
+            original_url=paths["original"],
+            medium_url=paths["medium"],
+            thumbnail_url=paths["thumbnail"]
         )
 
+
         db.session.add(image)
-        saved.append(filepath)
+        saved.append(paths)
 
     db.session.commit()
 
@@ -156,10 +182,23 @@ def delete_image_article_service(article_image_id):
             'message' : 'article not found'
         }, 404
     
-    old_path = articleImage.image_url
+    # old
+    # old_path = articleImage.image_url
 
-    if os.path.exists(old_path):
-        os.remove(old_path)
+    # if os.path.exists(old_path):
+    #     os.remove(old_path)
+
+    # new
+    
+    paths = [
+    articleImage.original_url,
+    articleImage.medium_url,
+    articleImage.thumbnail_url
+]
+
+    for path in paths:
+        if path and os.path.exists(path):
+            os.remove(path)
 
     db.session.delete(articleImage)
     db.session.commit()

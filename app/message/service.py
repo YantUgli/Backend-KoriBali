@@ -1,5 +1,5 @@
 from app.extensions import db
-from app.models.message import Message
+from app.message.models import Message
 
 from cerberus import Validator
 
